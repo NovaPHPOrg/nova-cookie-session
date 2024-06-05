@@ -54,7 +54,13 @@ class Session
             ini_set('session.gc_maxlifetime', $cacheTime);
         }
         session_set_save_handler(new SessionHandler($this->cache), true);
-        session_set_cookie_params($cacheTime, '/',null,true,true);
+        session_set_cookie_params([
+            'lifetime' => $cacheTime, // 会话Cookie将在浏览器关闭时过期
+            'path' => '/', // 可在整个域名下使用
+            'secure' => false, // 仅通过HTTPS发送
+            'httponly' => true, // 不能通过JavaScript访问
+            'samesite' => 'Strict', // 防止CSRF攻击
+        ]);
         // 启动会话
         session_start();
         self::$isStart = true;
@@ -69,7 +75,14 @@ class Session
     {
         return session_id();
     }
-
+    /**
+     * 重新生成sessionId,建议在用户登陆等提权的情况下使用，确保会话安全。
+     * @return void
+     */
+    public function regenerateId(): void
+    {
+        session_regenerate_id();
+    }
 
 
     /**
@@ -132,8 +145,22 @@ class Session
         }
     }
 
+    /**
+     * 结束SESSION的写操作，但是不删除会话
+     * @return void
+     */
+    public function close(): void
+    {
+        session_write_close();
+    }
+
+    /**
+     * 销毁会话
+     * @return void
+     */
     public function destroy(): void
     {
+        session_unset();
         session_destroy();
     }
     function __destruct()
