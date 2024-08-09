@@ -31,7 +31,7 @@ class SessionHandler implements SessionHandlerInterface
 
     public function read(string $id): string|false
     {
-        $result = $this->cache->get($id);
+        $result = $this->cache->get("session/$id");
         if($result===null){
             return '';
         }
@@ -40,7 +40,7 @@ class SessionHandler implements SessionHandlerInterface
 
     public function write(string $id, string $data): bool
     {
-        $this->cache->set($id,$data);
+        $this->cache->set("session/$id",$data);
         return true;
     }
 
