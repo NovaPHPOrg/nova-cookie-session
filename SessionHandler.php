@@ -5,14 +5,17 @@ use SessionHandlerInterface;
 
 class SessionHandler implements SessionHandlerInterface
 {
+    private Cache $cache;
+    private int $maxLifetime;
 
-    private  Cache $cache;
-
-    public function __construct(&$cache)
+    public function __construct(&$cache, int $maxLifetime = 2592000)
     {
         $this->cache = $cache;
+        if ($maxLifetime == 0) {
+            $maxLifetime = 2592000;
+        }
+        $this->maxLifetime = $maxLifetime; // 默认会话有效期为30天
     }
-
 
     public function close(): bool
     {
@@ -32,15 +35,24 @@ class SessionHandler implements SessionHandlerInterface
     public function read(string $id): string|false
     {
         $result = $this->cache->get("session/$id");
-        if($result===null){
+        if ($result === null) {
             return '';
         }
+
+        // 如果会话即将过期,自动延长有效期
+        $remainingTime = $this->cache->getTtl("session/$id");
+        if ($remainingTime < 86400 * 7) { // 如果剩余时间小于1天
+            $this->cache->set("session/$id", $result, $this->maxLifetime);
+        }
+        
         return $result;
     }
 
     public function write(string $id, string $data): bool
     {
-        $this->cache->set("session/$id",$data);
+        $lifetime = $this->maxLifetime;
+
+        $this->cache->set("session/$id", $data, $lifetime);
         return true;
     }
 

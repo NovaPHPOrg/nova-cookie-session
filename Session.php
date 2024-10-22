@@ -53,7 +53,7 @@ class Session
             // 设置会话的最大生存时间和Cookie参数
             ini_set('session.gc_maxlifetime', $cacheTime);
         }
-        session_set_save_handler(new SessionHandler($this->cache), true);
+        session_set_save_handler(new SessionHandler($this->cache, $cacheTime), true);
         session_set_cookie_params([
             'lifetime' => $cacheTime, // 会话Cookie将在浏览器关闭时过期
             'path' => '/', // 可在整个域名下使用
