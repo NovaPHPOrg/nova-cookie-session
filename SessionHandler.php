@@ -41,7 +41,7 @@ class SessionHandler implements SessionHandlerInterface
 
         // 如果会话即将过期,自动延长有效期
         $remainingTime = $this->cache->getTtl("session/$id");
-        if ($remainingTime < 86400 * 7) { // 如果剩余时间小于1天
+        if ($remainingTime > 0 && $remainingTime < 86400 * 7) { // 如果剩余时间小于1天
             $this->cache->set("session/$id", $result, $this->maxLifetime);
         }
         
