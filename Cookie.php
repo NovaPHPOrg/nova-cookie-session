@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2025. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
  * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
@@ -8,6 +11,7 @@
  */
 
 namespace nova\plugin\cookie;
+
 use nova\framework\text\Text;
 
 /**
@@ -28,11 +32,11 @@ class Cookie
 
     /**
      * 获取实例
-     * @param int $expire
-     * @param string $path
-     * @param string $domain
-     * @param bool $secure
-     * @param bool $httponly
+     * @param  int    $expire
+     * @param  string $path
+     * @param  string $domain
+     * @param  bool   $secure
+     * @param  bool   $httponly
      * @return Cookie
      */
     public static function getInstance(int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httponly = true): Cookie
@@ -45,11 +49,11 @@ class Cookie
 
     /**
      * 设置Cookie
-     * @param int $expire 过期时间 单位为s 默认是会话 关闭浏览器就不在存在
-     * @param string $path 路径 默认在本目录及子目录下有效 /表示根目录下有效
-     * @param string $domain 域
-     * @param bool $secure 是否只在https协议下设置默认不是
-     * @param bool $httponly 如果为TRUE，则只能通过HTTP协议访问cookie。 这意味着脚本语言（例如JavaScript）无法访问cookie
+     * @param  int    $expire   过期时间 单位为s 默认是会话 关闭浏览器就不在存在
+     * @param  string $path     路径 默认在本目录及子目录下有效 /表示根目录下有效
+     * @param  string $domain   域
+     * @param  bool   $secure   是否只在https协议下设置默认不是
+     * @param  bool   $httponly 如果为TRUE，则只能通过HTTP协议访问cookie。 这意味着脚本语言（例如JavaScript）无法访问cookie
      * @return Cookie
      */
     private function setOptions(int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httponly = true): Cookie
@@ -65,21 +69,21 @@ class Cookie
     /**
      * 设置cookie
      * @param string $name
-     * @param         $value
+     * @param        $value
      */
     public function set(string $name, $value): void
     {
 
-        if (is_array($value) || is_object($value))
+        if (is_array($value) || is_object($value)) {
             $value = json_encode($value);
+        }
         setcookie($name, $value, $this->expire, $this->path, $this->domain, $this->secure, $this->httponly);
     }
 
-
     /**
      * 获取cookie
-     * @param string $name
-     * @param mixed|null $default
+     * @param  string      $name
+     * @param  mixed|null  $default
      * @return array|mixed
      */
     public function get(string $name, mixed $default = null): mixed
@@ -89,7 +93,6 @@ class Cookie
         }
         return Text::parseType($default, $_COOKIE[$name]);
     }
-
 
     /**
      * 删除cookie
@@ -101,11 +104,17 @@ class Cookie
             return;
         }
         $value = $_COOKIE[$name];
-        setcookie($name, '', time() - 1, $this->path, $this->domain,
-            $this->secure, $this->httponly);
+        setcookie(
+            $name,
+            '',
+            time() - 1,
+            $this->path,
+            $this->domain,
+            $this->secure,
+            $this->httponly
+        );
         unset($value);
     }
-
 
     /**
      * cookie续期

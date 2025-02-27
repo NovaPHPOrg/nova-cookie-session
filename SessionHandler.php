@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2025. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
  * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
@@ -8,6 +11,7 @@
  */
 
 namespace nova\plugin\cookie;
+
 use nova\framework\cache\Cache;
 use SessionHandlerInterface;
 
@@ -52,7 +56,7 @@ class SessionHandler implements SessionHandlerInterface
         if ($remainingTime > 0 && $remainingTime < 86400 * 7) { // 如果剩余时间小于1天
             $this->cache->set("session/$id", $result, $this->maxLifetime);
         }
-        
+
         return $result;
     }
 
@@ -69,7 +73,7 @@ class SessionHandler implements SessionHandlerInterface
         $this->cache->delete("session/$id");
         return true;
     }
-    function __destruct()
+    public function __destruct()
     {
         session_write_close();
     }

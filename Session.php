@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2025. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
  * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
@@ -8,6 +11,7 @@
  */
 
 namespace nova\plugin\cookie;
+
 use nova\framework\cache\Cache;
 
 /**
@@ -22,7 +26,7 @@ class Session
     private static ?Session $instance = null;
     private static bool $isStart = false;
 
-    private  Cache $cache;
+    private Cache $cache;
     /**
      * 获取实例
      * @return Session
@@ -44,8 +48,8 @@ class Session
 
     /**
      * 启动session
-     * @param int $cacheTime Session缓存时间，默认会话有效
-     * @param string $sessionName
+     * @param  int    $cacheTime   Session缓存时间，默认会话有效
+     * @param  string $sessionName
      * @return void
      */
     public function start(int $cacheTime = 0, string $sessionName = 'NovaSession'): void
@@ -74,7 +78,6 @@ class Session
         self::$isStart = true;
     }
 
-
     /**
      * 获取sessionId
      * @return string
@@ -92,12 +95,11 @@ class Session
         session_regenerate_id();
     }
 
-
     /**
      * 设置session
-     * @param string $name session名称
-     * @param mixed $value
-     * @param int $expire 过期时间,单位秒
+     * @param string $name   session名称
+     * @param mixed  $value
+     * @param int    $expire 过期时间,单位秒
      */
     public function set(string $name, mixed $value, int $expire = 0): void
     {
@@ -111,11 +113,10 @@ class Session
 
     }
 
-
     /**
      * 获取session
-     * @param string $name 要获取的session名
-     * @param mixed|null $default 默认值
+     * @param  string     $name    要获取的session名
+     * @param  mixed|null $default 默认值
      * @return mixed
      */
     public function get(string $name, mixed $default = null): mixed
@@ -137,7 +138,6 @@ class Session
         }
         return null;
     }
-
 
     /**
      * 删除session
@@ -171,7 +171,7 @@ class Session
         session_unset();
         session_destroy();
     }
-    function __destruct()
+    public function __destruct()
     {
         session_write_close();
     }
