@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace nova\plugin\cookie;
 
-use nova\framework\text\Text;
+
 
 /**
  * Class Cookie
