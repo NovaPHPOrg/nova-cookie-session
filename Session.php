@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace nova\plugin\cookie;
 
-use nova\framework\cache\Cache;
+use function nova\framework\isWorkerman;
 
 /**
  * Class Session
@@ -26,7 +26,6 @@ class Session
     private static ?Session $instance = null;
     private static bool $isStart = false;
 
-    private Cache $cache;
     /**
      * 获取实例
      * @return Session
@@ -39,11 +38,6 @@ class Session
         }
 
         return self::$instance;
-    }
-
-    public function __construct()
-    {
-        $this->cache = new Cache();
     }
 
     /**
@@ -59,13 +53,9 @@ class Session
         }
 
         // 设置会话名称
-        ini_set("session.name", $sessionName);
+        session_name( $sessionName);
 
-        if ($cacheTime !== 0) {
-            // 设置会话的最大生存时间和Cookie参数
-            ini_set('session.gc_maxlifetime', $cacheTime);
-        }
-        session_set_save_handler(new SessionHandler($this->cache, $cacheTime), true);
+
         session_set_cookie_params([
             'lifetime' => $cacheTime, // 会话Cookie将在浏览器关闭时过期
             'path' => '/', // 可在整个域名下使用
@@ -73,6 +63,13 @@ class Session
             'httponly' => true, // 不能通过JavaScript访问
             'samesite' => 'Strict', // 防止CSRF攻击
         ]);
+
+        // 使用适配器来桥接 PHP 的 SessionHandler 和 Workerman 的 SessionHandler
+        if (isWorkerman()) {
+            session_set_save_handler(WorkermanSessionHandler::class);
+        } else {
+            session_set_save_handler(new SessionHandler(), true);
+        }
         // 启动会话
         session_start();
         self::$isStart = true;

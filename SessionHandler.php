@@ -20,13 +20,11 @@ class SessionHandler implements SessionHandlerInterface
     private Cache $cache;
     private int $maxLifetime;
 
-    public function __construct(&$cache, int $maxLifetime = 2592000)
+    public function __construct()
     {
-        $this->cache = $cache;
-        if ($maxLifetime == 0) {
-            $maxLifetime = 2592000;
-        }
-        $this->maxLifetime = $maxLifetime; // 默认会话有效期为30天
+        $this->cache = new Cache();
+        $cookieOptions = session_get_cookie_params();
+        $this->maxLifetime = (int)$cookieOptions['lifetime'] ?? 2592000;
     }
 
     public function close(): bool
@@ -63,7 +61,6 @@ class SessionHandler implements SessionHandlerInterface
     public function write(string $id, string $data): bool
     {
         $lifetime = $this->maxLifetime;
-
         $this->cache->set("session/$id", $data, $lifetime);
         return true;
     }
@@ -72,9 +69,5 @@ class SessionHandler implements SessionHandlerInterface
     {
         $this->cache->delete("session/$id");
         return true;
-    }
-    public function __destruct()
-    {
-        session_write_close();
     }
 }
