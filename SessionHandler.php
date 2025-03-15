@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace nova\plugin\cookie;
 
 use nova\framework\cache\Cache;
-use nova\framework\core\Logger;
 use SessionHandlerInterface;
 
 class SessionHandler implements SessionHandlerInterface

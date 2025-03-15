@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace nova\plugin\cookie;
 
-use function nova\framework\isWorkerman;
-
 /**
  * Class Session
  * @package cleanphp\web
