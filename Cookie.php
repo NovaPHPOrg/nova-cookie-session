@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace nova\plugin\cookie;
 
+use nova\framework\core\Text;
+
 /**
  * Class Cookie
  * @package cleanphp\web

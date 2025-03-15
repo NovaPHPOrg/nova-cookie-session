@@ -24,7 +24,6 @@ use function nova\framework\isWorkerman;
 class Session
 {
     private static ?Session $instance = null;
-    private static bool $isStart = false;
 
     /**
      * 获取实例
@@ -48,13 +47,12 @@ class Session
      */
     public function start(int $cacheTime = 0, string $sessionName = 'NovaSession'): void
     {
-        if (self::$isStart) {
-            return; // 如果已经启动会话，直接返回
+
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return;
         }
-
         // 设置会话名称
-        session_name( $sessionName);
-
+        session_name($sessionName);
 
         session_set_cookie_params([
             'lifetime' => $cacheTime, // 会话Cookie将在浏览器关闭时过期
@@ -65,14 +63,9 @@ class Session
         ]);
 
         // 使用适配器来桥接 PHP 的 SessionHandler 和 Workerman 的 SessionHandler
-        if (isWorkerman()) {
-            session_set_save_handler(WorkermanSessionHandler::class);
-        } else {
-            session_set_save_handler(new SessionHandler(), true);
-        }
+        session_set_save_handler(new SessionHandler($cacheTime), true);
         // 启动会话
         session_start();
-        self::$isStart = true;
     }
 
     /**
@@ -104,10 +97,8 @@ class Session
         if ($expire != 0) {
             $expire = time() + $expire;
             $_SESSION[$name . "_expire"] = $expire;
-
         }
         $_SESSION[$name] = serialize($value);
-
     }
 
     /**

@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace nova\plugin\cookie;
 
 use nova\framework\cache\Cache;
+use nova\framework\core\Logger;
 use SessionHandlerInterface;
 
 class SessionHandler implements SessionHandlerInterface
@@ -20,11 +21,10 @@ class SessionHandler implements SessionHandlerInterface
     private Cache $cache;
     private int $maxLifetime;
 
-    public function __construct()
+    public function __construct($cacheTime)
     {
         $this->cache = new Cache();
-        $cookieOptions = session_get_cookie_params();
-        $this->maxLifetime = (int)$cookieOptions['lifetime'] ?? 2592000;
+        $this->maxLifetime = $cacheTime ?? 2592000;
     }
 
     public function close(): bool
@@ -34,7 +34,8 @@ class SessionHandler implements SessionHandlerInterface
 
     public function gc(int $max_lifetime): int|false
     {
-        return true;
+        $this->cache->deleteKeyStartWith("session/");
+        return 0;
     }
 
     public function open(string $path, string $name): bool
