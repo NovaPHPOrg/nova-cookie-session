@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace nova\plugin\cookie;
 
 use nova\framework\cache\Cache;
+use nova\framework\core\Context;
 use SessionHandlerInterface;
 
 class SessionHandler implements SessionHandlerInterface
@@ -22,7 +23,7 @@ class SessionHandler implements SessionHandlerInterface
 
     public function __construct($cacheTime)
     {
-        $this->cache = new Cache();
+        $this->cache =   Context::instance()->cache;
         $this->maxLifetime = $cacheTime ?? 2592000;
     }
 
