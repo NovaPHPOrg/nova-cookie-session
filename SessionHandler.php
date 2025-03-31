@@ -28,12 +28,12 @@ class SessionHandler implements SessionHandlerInterface
 
     public function close(): bool
     {
-  /*      $key = "cookie/".session_id();
-        //检查Cookie过期
-        if (!$this->cache->get($key)){
-            $this->cache->set($key,"",300); //设置5分钟内不重复
-            Cookie::getInstance()->addTime($this->maxLifetime / 60);
-        }*/
+        /*      $key = "cookie/".session_id();
+              //检查Cookie过期
+              if (!$this->cache->get($key)){
+                  $this->cache->set($key,"",300); //设置5分钟内不重复
+                  Cookie::getInstance()->addTime($this->maxLifetime / 60);
+              }*/
         return true;
     }
 
