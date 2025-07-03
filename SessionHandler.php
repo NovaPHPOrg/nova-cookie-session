@@ -24,23 +24,17 @@ class SessionHandler implements SessionHandlerInterface
     public function __construct($cacheTime)
     {
         $this->cache =   Context::instance()->cache;
-        $this->maxLifetime = $cacheTime ?? 2592000;
+        $this->maxLifetime = $cacheTime ?? 2592000; //30天
     }
 
     public function close(): bool
     {
-        /*      $key = "cookie/".session_id();
-              //检查Cookie过期
-              if (!$this->cache->get($key)){
-                  $this->cache->set($key,"",300); //设置5分钟内不重复
-                  Cookie::getInstance()->addTime($this->maxLifetime / 60);
-              }*/
         return true;
     }
 
     public function gc(int $max_lifetime): int|false
     {
-        $this->cache->deleteKeyStartWith("session/");
+        $this->cache->gc("session/");
         return 0;
     }
 
