@@ -57,7 +57,6 @@ class Session
             'path' => '/', // 可在整个域名下使用
             'secure' => false, // 仅通过HTTPS发送
             'httponly' => true, // 不能通过JavaScript访问
-            'samesite' => 'None', // 防止CSRF攻击
         ]);
 
         // 使用适配器来桥接 PHP 的 SessionHandler 和 Workerman 的 SessionHandler
