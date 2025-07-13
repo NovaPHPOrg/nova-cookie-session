@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace nova\plugin\cookie;
 
+use function nova\framework\config;
+
 /**
  * Class Session
  * @package cleanphp\web
@@ -39,21 +41,22 @@ class Session
 
     /**
      * 启动session
-     * @param  int    $cacheTime   Session缓存时间，默认会话有效
-     * @param  string $sessionName
      * @return void
      */
-    public function start(int $cacheTime = 0, string $sessionName = 'NovaSession'): void
+    public function start(): void
     {
 
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
+        $sessionName = config("session.name") ?? "NovaSession";
         // 设置会话名称
         session_name($sessionName);
 
+        $cacheTime = config("session.time") ?? 0;
+
         session_set_cookie_params([
-            'lifetime' => $cacheTime, // 会话Cookie将在浏览器关闭时过期
+            'lifetime' => config("session.time") ?? 0, // 会话Cookie将在浏览器关闭时过期
             'path' => '/', // 可在整个域名下使用
             'secure' => false, // 仅通过HTTPS发送
             'httponly' => true, // 不能通过JavaScript访问
