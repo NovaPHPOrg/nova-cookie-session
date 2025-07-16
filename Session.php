@@ -49,7 +49,7 @@ class Session
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
-        $sessionName = config("session.name") ?? "NovaSession";
+        $sessionName = (substr(md5(ROOT_PATH), 8, 8))."_".(config("session.name") ?? "NovaSession");
         // 设置会话名称
         session_name($sessionName);
 
