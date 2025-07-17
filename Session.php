@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace nova\plugin\cookie;
 
-use function nova\framework\config;
-
 /**
  * Class Session
  * @package cleanphp\web
@@ -24,6 +22,7 @@ use function nova\framework\config;
 class Session
 {
     private static ?Session $instance = null;
+    private CookieConfig $config;
 
     /**
      * 获取实例
@@ -38,6 +37,10 @@ class Session
 
         return self::$instance;
     }
+    public function __construct()
+    {
+        $this->config = new CookieConfig();
+    }
 
     /**
      * 启动session
@@ -49,14 +52,14 @@ class Session
         if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
-        $sessionName = (substr(md5(ROOT_PATH), 8, 8))."_".(config("session.name") ?? "NovaSession");
+        $sessionName = (substr(md5(ROOT_PATH), 8, 8))."_".($this->config->session_name);
         // 设置会话名称
         session_name($sessionName);
 
-        $cacheTime = config("session.time") ?? 0;
+        $cacheTime = $this->config->expire;
 
         session_set_cookie_params([
-            'lifetime' => config("session.time") ?? 0, // 会话Cookie将在浏览器关闭时过期
+            'lifetime' => $cacheTime, // 会话Cookie将在浏览器关闭时过期
             'path' => '/', // 可在整个域名下使用
             'secure' => false, // 仅通过HTTPS发送
             'httponly' => true, // 不能通过JavaScript访问

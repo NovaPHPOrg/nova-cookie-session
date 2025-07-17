@@ -11,9 +11,5 @@
 declare(strict_types=1);
 
 return [
-    "config" => [
-        'session' => [
-            'time' => 0,
-        ]
-    ]
+
 ];
