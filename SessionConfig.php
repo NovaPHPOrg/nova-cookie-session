@@ -6,9 +6,9 @@ namespace nova\plugin\cookie;
 
 use nova\framework\core\ConfigObject;
 
-class CookieConfig extends ConfigObject
+class SessionConfig extends ConfigObject
 {
-    public int  $expire = 0;
+    public int  $time = 0;
 
     public string $session_name = "NovaSession";
 }

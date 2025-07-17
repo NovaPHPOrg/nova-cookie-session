@@ -22,7 +22,7 @@ namespace nova\plugin\cookie;
 class Session
 {
     private static ?Session $instance = null;
-    private CookieConfig $config;
+    private SessionConfig $config;
 
     /**
      * 获取实例
@@ -39,7 +39,7 @@ class Session
     }
     public function __construct()
     {
-        $this->config = new CookieConfig();
+        $this->config = new SessionConfig();
     }
 
     /**
@@ -56,7 +56,7 @@ class Session
         // 设置会话名称
         session_name($sessionName);
 
-        $cacheTime = $this->config->expire;
+        $cacheTime = $this->config->time;
 
         session_set_cookie_params([
             'lifetime' => $cacheTime, // 会话Cookie将在浏览器关闭时过期
