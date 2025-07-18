@@ -44,7 +44,7 @@ class Session
 
     public function isStarted(): bool
     {
-        return session_status() === PHP_SESSION_ACTIVE;
+        return $this->session_start;
     }
 
     /**
@@ -55,6 +55,7 @@ class Session
     {
 
         if (session_status() === PHP_SESSION_ACTIVE) {
+            $this->session_start = true;
             return;
         }
         $sessionName = (substr(md5(ROOT_PATH), 8, 8))."_".($this->config->session_name);
@@ -74,7 +75,10 @@ class Session
         session_set_save_handler(new SessionHandler($cacheTime), true);
         // 启动会话
         session_start();
+        $this->session_start = true;
     }
+
+    private bool $session_start = false;
 
     private function checkAndStart(): void
     {
@@ -169,6 +173,7 @@ class Session
     public function close(): void
     {
         if ($this->isStarted()) {
+            $this->session_start = false;
             session_write_close();
         }
     }
@@ -180,6 +185,7 @@ class Session
     public function destroy(): void
     {
         if ($this->isStarted()) {
+            $this->session_start = false;
             session_unset();
             session_destroy();
         }
@@ -187,6 +193,7 @@ class Session
     public function __destruct()
     {
         if ($this->isStarted()) {
+            $this->session_start = false;
             session_write_close();
         }
 
