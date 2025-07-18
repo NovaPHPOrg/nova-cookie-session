@@ -42,6 +42,11 @@ class Session
         $this->config = new SessionConfig();
     }
 
+    public function isStarted(): bool
+    {
+        return session_status() === PHP_SESSION_ACTIVE;
+    }
+
     /**
      * 启动session
      * @return void
@@ -71,12 +76,20 @@ class Session
         session_start();
     }
 
+    private function checkAndStart(): void
+    {
+        if (!$this->isStarted()) {
+            $this->start();
+        }
+    }
+
     /**
      * 获取sessionId
      * @return string
      */
     public function id(): string
     {
+        $this->checkAndStart();
         return session_id();
     }
     /**
@@ -85,6 +98,7 @@ class Session
      */
     public function regenerateId(): void
     {
+        $this->checkAndStart();
         session_regenerate_id();
     }
 
@@ -96,6 +110,7 @@ class Session
      */
     public function set(string $name, mixed $value, int $expire = 0): void
     {
+        $this->checkAndStart();
 
         if ($expire != 0) {
             $expire = time() + $expire;
@@ -112,6 +127,8 @@ class Session
      */
     public function get(string $name, mixed $default = null): mixed
     {
+        $this->checkAndStart();
+
         if (!isset($_SESSION[$name])) {
             return $default;
         }
@@ -136,6 +153,7 @@ class Session
      */
     public function delete(string $name): void
     {
+        $this->checkAndStart();
         if (isset($_SESSION[$name])) {
             unset($_SESSION[$name]);
         }
@@ -150,7 +168,9 @@ class Session
      */
     public function close(): void
     {
-        session_write_close();
+        if ($this->isStarted()) {
+            session_write_close();
+        }
     }
 
     /**
@@ -159,11 +179,16 @@ class Session
      */
     public function destroy(): void
     {
-        session_unset();
-        session_destroy();
+        if ($this->isStarted()) {
+            session_unset();
+            session_destroy();
+        }
     }
     public function __destruct()
     {
-        session_write_close();
+        if ($this->isStarted()) {
+            session_write_close();
+        }
+
     }
 }
