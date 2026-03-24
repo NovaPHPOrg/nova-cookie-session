@@ -32,6 +32,7 @@ class Session
      * Session实例（单例模式）
      *
      * @var Session|null
+     * @deprecated 仅用于非 Workerman 环境的回退，Workerman 下使用 Context 管理
      */
     private static ?Session $instance = null;
 
@@ -59,14 +60,26 @@ class Session
     }
 
     /**
-     * 获取Session单例实例
+     * 获取Session实例
      *
-     * 使用单例模式确保整个应用中只有一个Session实例
+     * 在 Workerman 等常驻进程环境下，通过 Context 管理实例生命周期，
+     * 确保每个请求拥有独立的 Session 实例，避免跨请求状态污染。
+     * 在传统 PHP-FPM 环境下回退到静态单例模式。
      *
      * @return Session Session实例
      */
     public static function getInstance(): Session
     {
+        // 优先使用 Context 实例（Workerman 等常驻进程环境下每个请求独立）
+        try {
+            $context = \nova\framework\core\Context::instance();
+            return $context->getOrCreateInstance('__session__', function () {
+                return new Session();
+            });
+        } catch (\Throwable $e) {
+            // Context 未初始化时回退到静态单例（传统 PHP-FPM 环境）
+        }
+
         if (is_null(self::$instance)) {
             self::$instance = new Session();
         }
@@ -304,7 +317,12 @@ class Session
     {
         if ($this->isStarted()) {
             $this->session_start = false;
-            session_write_close();
+            try {
+                session_write_close();
+            } catch (\Throwable) {
+                // 在 Workerman 等常驻进程环境下，Context 销毁顺序可能导致
+                // WorkermanApp 已不可用，此时由 WorkermanSession 的析构函数负责保存。
+            }
         }
     }
 }
