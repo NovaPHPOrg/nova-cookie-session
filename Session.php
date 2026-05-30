@@ -30,7 +30,6 @@ use nova\framework\core\Instance;
  */
 class Session extends Instance
 {
-
     /**
      * Session配置对象
      *
@@ -53,8 +52,6 @@ class Session extends Instance
     {
         $this->config = new SessionConfig();
     }
-
-
 
     /**
      * 检查Session是否已启动
