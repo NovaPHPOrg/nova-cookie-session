@@ -31,27 +31,11 @@ use nova\framework\core\Instance;
 class Session extends Instance
 {
     /**
-     * Session配置对象
-     *
-     * @var SessionConfig
-     */
-    private SessionConfig $config;
-
-    /**
      * Session是否已启动的标志
      *
      * @var bool
      */
     private bool $session_start = false;
-
-    /**
-     * 私有构造函数，防止外部直接实例化
-     * 初始化Session配置
-     */
-    public function __construct()
-    {
-        $this->config = new SessionConfig();
-    }
 
     /**
      * 检查Session是否已启动
@@ -84,13 +68,13 @@ class Session extends Instance
         }
 
         // 生成唯一的Session名称，基于ROOT_PATH的MD5值
-        $sessionName = (substr(md5(ROOT_PATH), 8, 8))."_".($this->config->session_name);
+        $sessionName = (substr(md5(ROOT_PATH), 8, 8))."_".(SessionConfig::getInstance()->session_name);
 
         // 设置会话名称
         session_name($sessionName);
 
         // 获取缓存时间配置
-        $cacheTime = $this->config->time;
+        $cacheTime = SessionConfig::getInstance()->time;
 
         // 设置Session Cookie参数
         session_set_cookie_params([
