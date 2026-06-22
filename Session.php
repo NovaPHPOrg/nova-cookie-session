@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace nova\plugin\cookie;
 
 use nova\framework\core\Instance;
+use Throwable;
 
 /**
  * Session操作类
@@ -269,7 +270,7 @@ class Session extends Instance
             $this->session_start = false;
             try {
                 session_write_close();
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // 在 Workerman 等常驻进程环境下，Context 销毁顺序可能导致
                 // WorkermanApp 已不可用，此时由 WorkermanSession 的析构函数负责保存。
             }
